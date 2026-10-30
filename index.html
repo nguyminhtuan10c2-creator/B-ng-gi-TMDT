@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script>
+      (function() {
+        try {
+          var activeFetch = window.fetch;
+          try {
+            Object.defineProperty(window, 'fetch', {
+              get: function() { return activeFetch; },
+              set: function(val) { activeFetch = val; },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (e) {}
+
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            var protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'fetch');
+            if (protoDesc && protoDesc.get && !protoDesc.set) {
+              Object.defineProperty(Window.prototype, 'fetch', {
+                get: function() { return activeFetch; },
+                set: function(val) {
+                  activeFetch = val;
+                  try {
+                    Object.defineProperty(this, 'fetch', {
+                      value: val,
+                      writable: true,
+                      configurable: true,
+                      enumerable: true
+                    });
+                  } catch (_) {}
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <meta name="theme-color" content="#0b1734" />
+    <title>KDT-89 Pricing Studio - Tính giá bán & Lợi nhuận sàn</title>
+    <meta name="description" content="Ứng dụng tính giá bán và lợi nhuận đa sàn (Shopee, Lazada), quản lý biểu phí, phí cố định theo nhóm, tính lãi ròng và biên lợi nhuận." />
+    <meta property="og:title" content="KDT-89 Pricing Studio - Tính giá bán & Lợi nhuận sàn" />
+    <meta property="og:description" content="Ứng dụng tính giá bán và lợi nhuận đa sàn (Shopee, Lazada), quản lý biểu phí, phí cố định theo nhóm, tính lãi ròng và biên lợi nhuận." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#f4f7fb] text-[#13213f] antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

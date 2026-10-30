@@ -1,0 +1,6 @@
+{
+  "name": "KDT-89 Pricing Studio",
+  "description": "Ứng dụng tính giá bán và lợi nhuận đa sàn (Shopee, Lazada), quản lý biểu phí, phí cố định theo nhóm, tính lãi ròng và biên lợi nhuận.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
