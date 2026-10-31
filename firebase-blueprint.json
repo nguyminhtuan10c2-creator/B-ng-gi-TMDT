@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "pricingWorkspace": {
+      "title": "PricingWorkspace",
+      "description": "Workspace data storing products, fee configurations, sale overrides, and metadata",
+      "type": "object",
+      "properties": {
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        },
+        "products": {
+          "type": "array",
+          "description": "Array of products"
+        },
+        "fees": {
+          "type": "object",
+          "description": "Fees configuration"
+        },
+        "overrides": {
+          "type": "object",
+          "description": "Sale price overrides"
+        }
+      },
+      "required": ["updatedAt"]
+    }
+  },
+  "firestore": {
+    "/kdt89_pricing/{docId}": {
+      "schema": "pricingWorkspace",
+      "description": "Stores user pricing workspaces"
+    }
+  }
+}

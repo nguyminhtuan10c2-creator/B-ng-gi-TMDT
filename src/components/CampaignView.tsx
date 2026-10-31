@@ -3,6 +3,7 @@ import { Product, PlatformType, CampaignConfig, FeesConfig } from '../types';
 import { money, number, percent } from '../utils/formatters';
 import { calc, saleKey } from '../utils/calculator';
 import { exportCampaignToExcel } from '../utils/excel';
+import { matchProductSearch } from '../utils/search';
 import { ProductModal } from './ProductModal';
 import { CurrencyInput } from './CurrencyInput';
 import { Save, CheckSquare, Sparkles, Download, ArrowRight, RefreshCw, Scale, ArrowUpRight, TrendingUp, Edit2, Filter, Search } from 'lucide-react';
@@ -126,11 +127,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       const p = item.product;
       const cat = p.category || 'Chưa phân loại';
       if (categoryFilter !== 'all' && cat !== categoryFilter) return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchName = p.name.toLowerCase().includes(q);
-        const matchSku = p.sku.toLowerCase().includes(q);
-        if (!matchName && !matchSku) return false;
+      if (searchQuery.trim() && !matchProductSearch(p, searchQuery)) {
+        return false;
       }
       if (profitFilter === 'profitable' && item.calc.profit < 0) return false;
       if (profitFilter === 'loss' && item.calc.profit >= 0) return false;
@@ -143,17 +141,20 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       const p = item.product;
       const cat = p.category || 'Chưa phân loại';
       if (categoryFilter !== 'all' && cat !== categoryFilter) return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchName = p.name.toLowerCase().includes(q);
-        const matchSku = p.sku.toLowerCase().includes(q);
-        if (!matchName && !matchSku) return false;
+      if (searchQuery.trim() && !matchProductSearch(p, searchQuery)) {
+        return false;
       }
       if (profitFilter === 'profitable' && item.shopee.profit < 0 && item.lazada.profit < 0) return false;
       if (profitFilter === 'loss' && (item.shopee.profit >= 0 || item.lazada.profit >= 0)) return false;
       return true;
     });
   }, [comparisonItems, categoryFilter, searchQuery, profitFilter]);
+
+  // Count total matches across all categories when searching with category filter active
+  const totalMatchesAcrossAllCategories = useMemo(() => {
+    if (!searchQuery.trim()) return 0;
+    return calculatedItems.filter((item) => matchProductSearch(item.product, searchQuery)).length;
+  }, [calculatedItems, searchQuery]);
 
   // Visible SKUs currently shown in active filter
   const visibleSkus = useMemo(() => {
@@ -753,6 +754,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             )}
           </div>
         </div>
+
+        {/* Helper banner if matches found outside active category */}
+        {categoryFilter !== 'all' && filteredCalculatedItems.length === 0 && totalMatchesAcrossAllCategories > 0 && (
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+              <span className="font-bold">⚠️ Không tìm thấy sản phẩm nào trong ngành "{categoryFilter}" khớp với "{searchQuery}".</span>
+              <span>Nhưng có <strong>{totalMatchesAcrossAllCategories} sản phẩm</strong> phù hợp ở các ngành khác!</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('all')}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold transition shrink-0 cursor-pointer"
+            >
+              Xem tất cả ({totalMatchesAcrossAllCategories} sản phẩm)
+            </button>
+          </div>
+        )}
 
         {/* Comparison Mode Table */}
         {viewMode === 'compare' ? (

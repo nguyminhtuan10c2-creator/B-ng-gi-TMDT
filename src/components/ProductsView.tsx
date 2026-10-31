@@ -3,6 +3,7 @@ import { Product } from '../types';
 import { money, number } from '../utils/formatters';
 import { productValue } from '../utils/calculator';
 import { exportProductsToExcel } from '../utils/excel';
+import { matchProductSearch } from '../utils/search';
 import { ProductModal } from './ProductModal';
 import { CurrencyInput } from './CurrencyInput';
 import {
@@ -81,24 +82,28 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
 
   // Filter products
   const filteredProducts = useMemo(() => {
-    const q = search.trim().toLowerCase();
     return products.filter((p) => {
-      const matchSearch =
-        !q ||
-        p.sku.toLowerCase().includes(q) ||
-        p.name.toLowerCase().includes(q) ||
-        (p.category && p.category.toLowerCase().includes(q));
+      if (search.trim() && !matchProductSearch(p, search)) {
+        return false;
+      }
 
       const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
+      if (!matchCategory) return false;
 
       let matchStock = true;
       if (stockFilter === 'in-stock') matchStock = p.stock > 5;
       else if (stockFilter === 'low-stock') matchStock = p.stock > 0 && p.stock <= 5;
       else if (stockFilter === 'out-stock') matchStock = p.stock <= 0;
 
-      return matchSearch && matchCategory && matchStock;
+      return matchStock;
     });
   }, [products, search, selectedCategory, stockFilter]);
+
+  // Total matches across all categories when search is active
+  const totalMatchesAcrossAllCategories = useMemo(() => {
+    if (!search.trim()) return 0;
+    return products.filter((p) => matchProductSearch(p, search)).length;
+  }, [products, search]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -409,6 +414,23 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             {sourceName}
           </span>
         </div>
+
+        {/* Helper banner if matches found outside active category */}
+        {selectedCategory !== 'all' && filteredProducts.length === 0 && totalMatchesAcrossAllCategories > 0 && (
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+              <span className="font-bold">⚠️ Không tìm thấy sản phẩm nào trong ngành "{selectedCategory}" khớp với "{search}".</span>
+              <span>Nhưng có <strong>{totalMatchesAcrossAllCategories} sản phẩm</strong> phù hợp ở các ngành khác!</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('all')}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold transition shrink-0 cursor-pointer"
+            >
+              Xem tất cả ({totalMatchesAcrossAllCategories} sản phẩm)
+            </button>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[850px] text-left border-collapse text-xs sm:text-sm">

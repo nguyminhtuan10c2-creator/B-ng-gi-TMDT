@@ -171,13 +171,13 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
         <div className="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm">
           {activeTab === 'firebase' ? (
             <>
-              <div className="p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/20 text-[#1e3a8a] dark:text-blue-300">
+              <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 text-[#065f46] dark:text-emerald-300">
                 <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>Chế độ lưu trữ: {isCloudConnected ? 'Firebase Firestore (Online)' : 'Trình duyệt LocalStorage (Sẵn sàng)'}</span>
+                  <span>Firebase Firestore: {isCloudConnected ? '🟢 Đã kết nối dự án second-spanner-gvxch' : 'Đang kiểm tra kết nối...'}</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  App luôn tự động lưu dữ liệu trên trình duyệt. Khi nhập thông tin Firebase bên dưới, app sẽ đồng bộ dữ liệu sản phẩm, biểu phí và giá sale lên Cloud để dùng chung nhiều thiết bị.
+                  Đã kết nối cơ sở dữ liệu Firestore <strong>ai-studio-kdt89pricingstud-e411262e-67fa-442b-9306-a745df98a944</strong>. Dữ liệu sản phẩm, biểu phí sàn và giá sale được đồng bộ an toàn trên Cloud.
                 </p>
               </div>
 

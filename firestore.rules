@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidWorkspace(data) {
+      return data.keys().hasAll(['updatedAt']) &&
+             data.keys().hasOnly(['updatedAt', 'products', 'fees', 'overrides', 'campaign', 'sourceName']) &&
+             data.updatedAt is string && data.updatedAt.size() <= 100 &&
+             (!('products' in data) || data.products is list) &&
+             (!('fees' in data) || data.fees is map) &&
+             (!('overrides' in data) || data.overrides is map);
+    }
+
+    match /kdt89_pricing/{docId} {
+      allow get: if isValidId(docId);
+      allow list: if false;
+      allow create, update: if isValidId(docId) && isValidWorkspace(incoming());
+      allow delete: if false;
+    }
+  }
+}
