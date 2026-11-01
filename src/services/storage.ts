@@ -121,7 +121,34 @@ export const Storage = {
   getProducts(): Product[] {
     try {
       const val = localStorage.getItem('kdt-products');
-      return val ? JSON.parse(val) : TMDT_PRODUCTS;
+      const list: Product[] = val ? JSON.parse(val) : TMDT_PRODUCTS;
+      // Auto-heal any stale cached items in browser localStorage
+      let modified = false;
+      const cleaned = list.map((p) => {
+        const nameLower = (p.name || '').toLowerCase();
+        const isWaterPurifier =
+          nameLower.includes('lọc nước') ||
+          nameLower.includes('lọc nước') ||
+          nameLower.includes('cây nước') ||
+          nameLower.includes('cay nuoc') ||
+          nameLower.includes('nước nóng lạnh') ||
+          nameLower.includes('rwf-w');
+        if (
+          isWaterPurifier &&
+          (p.category === 'Máy nước nóng' ||
+            p.category === 'Điện máy gia dụng' ||
+            p.category === 'Cây nước nóng' ||
+            p.category === 'Gia dụng')
+        ) {
+          modified = true;
+          return { ...p, category: 'Máy lọc nước & Cây nước' };
+        }
+        return p;
+      });
+      if (modified) {
+        localStorage.setItem('kdt-products', JSON.stringify(cleaned));
+      }
+      return cleaned;
     } catch {
       return TMDT_PRODUCTS;
     }

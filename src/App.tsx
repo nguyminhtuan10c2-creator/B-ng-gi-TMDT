@@ -439,6 +439,7 @@ export default function App() {
             onSelectProfitable={handleSelectProfitable}
             onSelectBatch={handleSelectBatch}
             onSaveCampaign={handleSaveCampaign}
+            onAddProduct={handleAddProduct}
             onUpdateProduct={handleUpdateProduct}
             onQuickUpdateField={handleQuickUpdateProductField}
             onNavigate={setCurrentView}

@@ -30,19 +30,55 @@ export function parseStock(val: unknown): number {
 
 export function cleanCategory(cat: string, name: string): string {
   const c = (cat || '').trim();
-  if (c === 'GD') return 'Gia dụng';
+  const inferred = inferCategory(name);
+  if (c === 'GD') {
+    return inferred !== 'Điện máy gia dụng' ? inferred : 'Gia dụng';
+  }
   if (c === 'NC') return 'Nồi cơm điện';
   if (c === 'Mic') return 'Micro & Âm thanh';
   if (c === 'TV') return 'Tivi & Màn hình';
   if (c.toLowerCase() === 'tủ lạnh') return 'Tủ lạnh';
+  if (c.toLowerCase() === 'cây nước nóng' || c.toLowerCase() === 'máy lọc nước') {
+    return 'Máy lọc nước & Cây nước';
+  }
+  // If Excel file misclassified a water purifier as "Máy nước nóng"
+  if (c === 'Máy nước nóng' && inferred === 'Máy lọc nước & Cây nước') {
+    return 'Máy lọc nước & Cây nước';
+  }
   if (c) return c;
-  return inferCategory(name);
+  return inferred;
 }
 
 export function inferCategory(name: string): string {
   const n = (name || '').toLowerCase();
   if (n.includes('điều hòa') || n.includes('máy lạnh')) return 'Máy lạnh & Điều hòa';
-  if (n.includes('máy nước nóng') || n.includes('máy tắm nóng') || n.includes('nước nóng')) return 'Máy nước nóng';
+  
+  // 1. Water purifiers and water dispensers (check before water heaters to prevent "nước nóng lạnh" false match)
+  if (
+    n.includes('lọc nước') ||
+    n.includes('lọc nước') ||
+    n.includes('cây nước') ||
+    n.includes('bình để dưới') ||
+    n.includes('nước nóng lạnh') ||
+    n.includes('chungho') ||
+    n.includes('karofi')
+  ) {
+    return 'Máy lọc nước & Cây nước';
+  }
+
+  // 2. Water heaters (shower water heaters)
+  if (
+    n.includes('máy nước nóng') ||
+    n.includes('máy tắm nóng') ||
+    n.includes('tắm nóng') ||
+    n.includes('bình nóng lạnh') ||
+    n.includes('nước nóng trực tiếp') ||
+    n.includes('nước nóng gián tiếp') ||
+    (n.includes('nước nóng') && !n.includes('lọc nước') && !n.includes('cây nước'))
+  ) {
+    return 'Máy nước nóng';
+  }
+
   if (
     n.includes('nồi cơm') ||
     n.includes('nồi chiên') ||
@@ -54,14 +90,14 @@ export function inferCategory(name: string): string {
   ) {
     return 'Nồi & Gia dụng bếp';
   }
-  if (n.includes('tivi') || n.includes('tivi')) return 'Tivi & Màn hình';
+  if (n.includes('tivi') || n.includes('ti vi')) return 'Tivi & Màn hình';
   if (n.includes('quạt') || n.includes('quạh')) return 'Quạt làm mát';
   if (n.includes('loa') || n.includes('micro') || n.includes('karaoke')) return 'Âm thanh & Loa';
-  if (n.includes('lọc nước') || n.includes('cây nước') || n.includes('bình để dưới')) return 'Máy lọc nước & Cây nước';
   if (
     n.includes('bếp từ') ||
     n.includes('bếp điện') ||
     n.includes('bếp ga') ||
+    n.includes('bếp gas') ||
     n.includes('bếp hồng ngoại') ||
     n.includes('bếp nướng')
   ) {
@@ -75,7 +111,7 @@ export function inferCategory(name: string): string {
   if (n.includes('máy giặt')) return 'Máy giặt';
   if (n.includes('tủ lạnh')) return 'Tủ lạnh';
   if (n.includes('xay') || n.includes('đánh trứng')) return 'Máy xay & Pha cà phê';
-  if (n.includes('bàn ủi')) return 'Bàn ủi';
+  if (n.includes('bàn ủi') || n.includes('bàn là')) return 'Bàn ủi';
   if (n.includes('pin sạc') || n.includes('sạc đa năng')) return 'Phụ kiện & Pin sạc';
   return 'Điện máy gia dụng';
 }

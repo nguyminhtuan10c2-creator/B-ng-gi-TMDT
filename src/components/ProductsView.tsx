@@ -21,6 +21,7 @@ import {
   ToggleRight,
   Boxes,
   AlertTriangle,
+  Copy,
 } from 'lucide-react';
 
 interface ProductsViewProps {
@@ -146,12 +147,26 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     setModalState({ isOpen: true, product: p });
   };
 
+  const handleDuplicate = (p: Product) => {
+    const copySku = `${p.sku}-CP`;
+    setModalState({
+      isOpen: true,
+      product: {
+        ...p,
+        sku: copySku,
+        name: `${p.name} (Bản sao)`,
+      },
+    });
+  };
+
   const handleSaveModal = (savedProd: Product) => {
-    if (modalState.product) {
+    const isExisting = products.some((p) => p.sku === savedProd.sku);
+    if (isExisting) {
       onUpdateProduct(savedProd);
     } else {
       onAddProduct(savedProd);
     }
+    setModalState({ isOpen: false, product: null });
   };
 
   const handleDelete = (p: Product) => {
@@ -549,7 +564,15 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
 
                       {/* Action buttons */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1.5">
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleDuplicate(p)}
+                            title="Nhân bản sản phẩm này để tạo SP mới nhanh chóng"
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition cursor-pointer"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(p)}

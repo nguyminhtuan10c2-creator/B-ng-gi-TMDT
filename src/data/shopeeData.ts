@@ -58,7 +58,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-272112183318",
     "name": "Máy lọc nước RO Chungho Tiny 300 UV CHP-2321D hai chế độ nước lạnh và nguội",
-    "category": "Điện máy gia dụng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 9750000,
     "listPrice": 13000000,
     "stock": 20,
@@ -373,7 +373,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-280743166467",
     "name": "Cây nước nóng lạnh (Bình để dưới) Toshiba RWF-W1669BV (W1)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 3375000,
     "listPrice": 4500000,
     "stock": 0,
@@ -571,7 +571,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-266045483856",
     "name": "Máy nước nóng lạnh Toshiba RWF-W1917TV(K)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2167500,
     "listPrice": 2890000,
     "stock": 100,
@@ -598,7 +598,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-265742369498",
     "name": "Cây Nước Nóng Lạnh Toshiba RWF-W1664TV (K1) (bình nước trên)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2700000,
     "listPrice": 3600000,
     "stock": 0,
@@ -625,7 +625,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-305743126096",
     "name": "Cây nước nóng lạnh (Bình để dưới) Toshiba RWF-W1669BV (K1)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 3375000,
     "listPrice": 4500000,
     "stock": 100,
@@ -1084,7 +1084,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-223030263570",
     "name": "Cây Nước Nóng Lạnh Toshiba RWF-W1664TV (W1) (bình nước trên)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2925000,
     "listPrice": 3900000,
     "stock": 0,
@@ -1372,7 +1372,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-177268518565",
     "name": "Máy lọc nước nóng lạnh Karofi KAD-M68",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 7380000,
     "listPrice": 9840000,
     "stock": 0,
@@ -1705,7 +1705,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-69494622582",
     "name": "Cây nước nóng lạnh TrueHome TD-TC1740S(W)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2400000,
     "listPrice": 3200000,
     "stock": 10,
@@ -1867,7 +1867,7 @@ export const SHOPEE_PRODUCTS: Product[] = [
   {
     "sku": "PL-247177457991",
     "name": "Cây nước nóng lạnh Truehome TD-TC1536(W)",
-    "category": "Máy nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 1380000,
     "listPrice": 1840000,
     "stock": 10,

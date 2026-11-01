@@ -6,7 +6,7 @@ import { exportCampaignToExcel } from '../utils/excel';
 import { matchProductSearch } from '../utils/search';
 import { ProductModal } from './ProductModal';
 import { CurrencyInput } from './CurrencyInput';
-import { Save, CheckSquare, Sparkles, Download, ArrowRight, RefreshCw, Scale, ArrowUpRight, TrendingUp, Edit2, Filter, Search } from 'lucide-react';
+import { Save, CheckSquare, Sparkles, Download, ArrowRight, RefreshCw, Scale, ArrowUpRight, TrendingUp, Edit2, Filter, Search, Plus } from 'lucide-react';
 import { ViewType } from './Navigation';
 
 interface CampaignViewProps {
@@ -25,6 +25,7 @@ interface CampaignViewProps {
   onSelectProfitable: () => void;
   onSelectBatch?: (skus: string[], select: boolean) => void;
   onSaveCampaign: () => void;
+  onAddProduct?: (product: Product) => void;
   onUpdateProduct?: (product: Product) => void;
   onQuickUpdateField?: (sku: string, field: keyof Product, val: any) => void;
   onNavigate: (view: ViewType) => void;
@@ -47,6 +48,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   onSelectProfitable,
   onSelectBatch,
   onSaveCampaign,
+  onAddProduct,
   onUpdateProduct,
   onQuickUpdateField,
   onNavigate,
@@ -54,6 +56,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'single' | 'compare'>('single');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [profitFilter, setProfitFilter] = useState<'all' | 'profitable' | 'loss'>('all');
@@ -266,11 +269,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={() => {
+              setEditingProduct(null);
+              setIsAddModalOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-[0_6px_16px_rgba(16,185,129,0.25)] transition active:scale-95 cursor-pointer shrink-0"
+            title="Thêm sản phẩm mới trực tiếp vào kho & chương trình sale"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Thêm sản phẩm</span>
+          </button>
           <button
             type="button"
             onClick={handleExportCampaign}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#eef3fb] dark:bg-[#1a2b50] hover:bg-[#e4ebf7] dark:hover:bg-[#203666] text-[#284064] dark:text-[#a6c1ee] font-bold text-xs sm:text-sm transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#eef3fb] dark:bg-[#1a2b50] hover:bg-[#e4ebf7] dark:hover:bg-[#203666] text-[#284064] dark:text-[#a6c1ee] font-bold text-xs sm:text-sm transition cursor-pointer shrink-0"
           >
             <Download className="w-4 h-4 text-[#246bfe]" />
             <span>{viewMode === 'compare' ? 'Xuất so sánh 2 sàn' : 'Xuất file sale'}</span>
@@ -278,7 +293,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           <button
             type="button"
             onClick={onSaveCampaign}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#246bfe] hover:bg-[#195de6] text-white font-bold text-xs sm:text-sm shadow-[0_8px_16px_rgba(36,107,254,0.2)] transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#246bfe] hover:bg-[#195de6] text-white font-bold text-xs sm:text-sm shadow-[0_8px_16px_rgba(36,107,254,0.2)] transition active:scale-95 cursor-pointer shrink-0"
           >
             <Save className="w-4 h-4" />
             <span>Lưu chương trình</span>
@@ -287,10 +302,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       </div>
 
       {/* Prominent Platform & Mode Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-[#162343] p-3 rounded-2xl border border-[#e4e9f2] dark:border-[#2b3b62] shadow-sm">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-[#162343] p-3 sm:p-4 rounded-2xl border border-[#e4e9f2] dark:border-[#2b3b62] shadow-xs">
         {/* Platform Selection */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[#71809d] dark:text-[#8ea2c8] uppercase pl-1">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <span className="text-xs font-bold text-[#71809d] dark:text-[#8ea2c8] uppercase pl-1 shrink-0">
             Sàn tính phí:
           </span>
           <button
@@ -299,7 +314,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               onPlatformChange('shopee');
               setViewMode('single');
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer shrink-0 ${
               platform === 'shopee' && viewMode === 'single'
                 ? 'bg-[#ee4d2d] text-white shadow-md'
                 : 'bg-orange-50 dark:bg-orange-950/30 text-[#ee4d2d] hover:bg-orange-100'
@@ -315,7 +330,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               onPlatformChange('lazada');
               setViewMode('single');
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer shrink-0 ${
               platform === 'lazada' && viewMode === 'single'
                 ? 'bg-[#0f146d] dark:bg-[#343ec2] text-white shadow-md'
                 : 'bg-blue-50 dark:bg-blue-950/30 text-[#0f146d] dark:text-[#828cf5] hover:bg-blue-100'
@@ -330,7 +345,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         <button
           type="button"
           onClick={() => setViewMode((prev) => (prev === 'single' ? 'compare' : 'single'))}
-          className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border ${
+          className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border shrink-0 ${
             viewMode === 'compare'
               ? 'bg-[#7559db] text-white border-transparent shadow-md'
               : 'border-[#7559db]/40 text-[#7559db] dark:text-[#a08bf5] hover:bg-[#7559db]/10'
@@ -442,7 +457,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </div>
 
           {/* Mini Real-Time Summary */}
-          <div className="grid grid-cols-3 gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
             <div className="bg-[#f7f9fd] dark:bg-[#1a2b50] rounded-xl p-3 text-center sm:text-left">
               <span className="text-[11px] font-bold text-[#71809d] dark:text-[#8ea2c8] uppercase block">
                 Sản phẩm chọn
@@ -630,23 +645,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           <div className="font-extrabold text-[#246bfe] dark:text-[#5e95ff] text-xs sm:text-sm flex items-center gap-1.5">
             <span>💡 Cơ chế 4 bước định giá & tạo hiệu ứng thị giác sàn TMĐT:</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-slate-700 dark:text-slate-300">
-            <div className="p-2.5 rounded-xl bg-white/90 dark:bg-[#14213f] border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 text-slate-700 dark:text-slate-300">
+            <div className="p-2.5 rounded-xl bg-white/95 dark:bg-[#14213f] border border-slate-200 dark:border-slate-800 shadow-2xs">
               <span className="block text-[10px] text-slate-500 dark:text-slate-400 uppercase font-black">Bước 1</span>
               <strong className="block text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm">1. Giá nhập (vốn)</strong>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Tiền mua hàng từ NCC / xưởng</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/90 dark:bg-[#14213f] border border-purple-200 dark:border-purple-800/60 shadow-2xs">
+            <div className="p-2.5 rounded-xl bg-white/95 dark:bg-[#14213f] border border-purple-200 dark:border-purple-800/60 shadow-2xs">
               <span className="block text-[10px] text-[#7559db] dark:text-[#b49eff] uppercase font-black">Bước 2 (Hiệu ứng)</span>
               <strong className="block text-[#7559db] dark:text-[#b49eff] font-extrabold text-xs sm:text-sm">2. Giá niêm yết (gạch)</strong>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Đặt cao để gạch giá giảm sốc</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/90 dark:bg-[#14213f] border border-amber-200 dark:border-amber-800/60 shadow-2xs">
+            <div className="p-2.5 rounded-xl bg-white/95 dark:bg-[#14213f] border border-amber-200 dark:border-amber-800/60 shadow-2xs">
               <span className="block text-[10px] text-amber-600 dark:text-amber-400 uppercase font-black">Bước 3</span>
               <strong className="block text-amber-600 dark:text-amber-400 font-extrabold text-xs sm:text-sm">3. % Khuyến mãi</strong>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">% Giảm từ Giá niêm yết ban đầu</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/90 dark:bg-[#14213f] border border-blue-200 dark:border-blue-800/60 shadow-2xs">
+            <div className="p-2.5 rounded-xl bg-white/95 dark:bg-[#14213f] border border-blue-200 dark:border-blue-800/60 shadow-2xs">
               <span className="block text-[10px] text-[#246bfe] dark:text-[#7ba9ff] uppercase font-black">Bước 4 (Thực bán & Lãi)</span>
               <strong className="block text-[#246bfe] dark:text-[#7ba9ff] font-extrabold text-xs sm:text-sm">4. Giá sau khuyến mãi</strong>
               <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">Lãi = Giá sau KM - Phí sàn - Giá vốn</p>
@@ -654,12 +669,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </div>
         </div>
 
-        {/* Category Dropdown Filter Bar */}
-        <div className="p-3.5 sm:p-4 bg-slate-50/90 dark:bg-[#14213f]/80 border-t border-[#e4e9f2] dark:border-[#2b3b62] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
+        {/* Category Dropdown & Filters Bar */}
+        <div className="p-3 sm:p-4 bg-slate-50 dark:bg-[#14213f] border-t border-[#e4e9f2] dark:border-[#2b3b62] flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
             {/* 1. Category Dropdown (Dạng xổ xuống) */}
             <div className="flex items-center gap-2">
-              <label htmlFor="category-select" className="text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-1.5">
+              <label htmlFor="category-select" className="text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-1.5 shrink-0">
                 <Filter className="w-4 h-4 text-[#246bfe]" />
                 <span>Ngành hàng:</span>
               </label>
@@ -667,7 +682,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 id="category-select"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#162343] text-xs sm:text-sm font-bold text-[#13213f] dark:text-white outline-none focus:border-[#246bfe] focus:ring-2 focus:ring-[#246bfe]/20 cursor-pointer shadow-xs min-w-[200px]"
+                className="px-3 py-2 rounded-xl border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#162343] text-xs sm:text-sm font-bold text-[#13213f] dark:text-white outline-none focus:border-[#246bfe] focus:ring-2 focus:ring-[#246bfe]/20 cursor-pointer shadow-xs min-w-[190px] max-w-xs"
               >
                 <option value="all">📂 Tất cả ngành hàng ({products.length} sản phẩm)</option>
                 {categoriesWithCount.map(({ cat, count }) => (
@@ -680,7 +695,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
             {/* Quick Batch Actions when a specific category is selected */}
             {categoryFilter !== 'all' && (
-              <div className="flex items-center gap-1.5 animate-in fade-in duration-150">
+              <div className="flex items-center gap-1.5 animate-in fade-in duration-150 shrink-0">
                 <button
                   type="button"
                   onClick={() => handleSelectCurrentCategory(true)}
@@ -702,7 +717,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             )}
 
             {/* 2. Search Box */}
-            <div className="relative min-w-[200px] max-w-xs flex-1">
+            <div className="relative min-w-[180px] sm:w-64 flex-1 sm:flex-initial">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
@@ -715,7 +730,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-bold p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer"
                 >
                   ×
                 </button>
@@ -726,7 +741,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             <select
               value={profitFilter}
               onChange={(e) => setProfitFilter(e.target.value as any)}
-              className="px-3 py-2 rounded-xl border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#162343] text-xs font-semibold text-slate-700 dark:text-slate-300 outline-none cursor-pointer shadow-2xs"
+              className="px-3 py-2 rounded-xl border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#162343] text-xs font-semibold text-slate-700 dark:text-slate-300 outline-none cursor-pointer shadow-2xs shrink-0"
             >
               <option value="all">⚡ Tất cả trạng thái</option>
               <option value="profitable">🟢 Chỉ sản phẩm có lời (≥ 0 đ)</option>
@@ -735,7 +750,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </div>
 
           {/* Right Side: Product Count & Clear Filter */}
-          <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+          <div className="flex items-center justify-between xl:justify-end gap-2.5 text-xs text-slate-500 dark:text-slate-400 shrink-0 pt-2 xl:pt-0 border-t xl:border-t-0 border-slate-200/70 dark:border-slate-800">
             <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#162343] border border-slate-200 dark:border-slate-800 font-medium">
               Hiển thị <strong className="text-[#246bfe] font-extrabold">{filteredCalculatedItems.length}</strong> / {products.length} sản phẩm
             </span>
@@ -774,11 +789,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
         {/* Comparison Mode Table */}
         {viewMode === 'compare' ? (
-          <div className="overflow-auto max-h-[calc(100vh-220px)] min-h-[460px] relative scrollbar-thin rounded-xl border border-[#e4e9f2] dark:border-[#2b3b62]">
-            <table className="w-full min-w-[1240px] text-left border-collapse text-xs sm:text-sm">
-              <thead className="sticky top-0 z-30 shadow-[0_2px_4px_rgba(0,0,0,0.06)] bg-[#fbfcfe] dark:bg-[#14213f]">
-                <tr className="bg-[#fbfcfe] dark:bg-[#14213f] text-[#71809d] dark:text-[#8ea2c8] uppercase text-[11px] font-bold tracking-wider border-b border-[#e4e9f2] dark:border-[#2b3b62]">
-                  <th className="py-3 px-3 w-12 text-center sticky top-0 left-0 z-50 bg-[#fbfcfe] dark:bg-[#14213f]">
+          <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)] min-h-[460px] relative scrollbar-thin">
+            <table className="w-full min-w-[1320px] text-left border-separate border-spacing-0 text-xs sm:text-sm">
+              <thead className="sticky top-0 z-30 shadow-xs">
+                <tr className="uppercase text-[11px] font-bold tracking-wider">
+                  <th className="py-3 px-3 w-[48px] min-w-[48px] max-w-[48px] text-center sticky top-0 left-0 z-50 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
                     <input
                       type="checkbox"
                       checked={allVisibleSelected}
@@ -793,30 +808,42 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                       className="w-4 h-4 rounded text-[#246bfe] accent-[#246bfe] cursor-pointer"
                     />
                   </th>
-                  <th className="py-3 px-3 min-w-[220px] max-w-[260px] sticky top-0 left-12 z-50 bg-[#fbfcfe] dark:bg-[#14213f] shadow-[2px_0_5px_rgba(0,0,0,0.04)]">
+                  <th className="py-3 px-3 w-[260px] min-w-[260px] max-w-[280px] sticky top-0 left-[48px] z-50 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r-2 border-slate-300 dark:border-slate-700 shadow-[3px_0_6px_rgba(0,0,0,0.06)]">
                     Sản phẩm
                   </th>
-                  <th className="py-3 px-2 text-center w-16 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Tồn kho</th>
-                  <th className="py-3 px-2 text-right w-28 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">1. Giá vốn</th>
-                  <th className="py-3 px-2 text-right w-28 text-[#7559db] dark:text-[#b49eff] sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">2. Giá niêm yết</th>
-                  <th className="py-3 px-2 text-right w-28 text-[#246bfe] sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">3. Giá sau KM</th>
-                  <th className="py-3 px-3 text-right bg-orange-50/90 dark:bg-orange-950/40 text-[#ee4d2d] sticky top-0">
+                  <th className="py-3 px-2 text-center w-16 min-w-[64px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Tồn kho
+                  </th>
+                  <th className="py-3 px-2 text-right min-w-[115px] sticky top-0 z-20 bg-[#e2e8f0] dark:bg-[#1e293b] text-slate-800 dark:text-slate-100 border-b-2 border-slate-400 dark:border-slate-600 border-r border-slate-300 dark:border-slate-700">
+                    1. Giá vốn
+                  </th>
+                  <th className="py-3 px-2 text-right min-w-[120px] text-[#6d28d9] dark:text-[#c4b5fd] sticky top-0 z-20 bg-[#ede9fe] dark:bg-[#2e1d5a] border-b-2 border-purple-300 dark:border-purple-700 border-r border-purple-200 dark:border-purple-800">
+                    2. Giá niêm yết
+                  </th>
+                  <th className="py-3 px-2 text-right min-w-[120px] text-[#1d4ed8] dark:text-[#93c5fd] sticky top-0 z-20 bg-[#e0e7ff] dark:bg-[#1e2e60] border-b-2 border-blue-300 dark:border-blue-700 border-r border-blue-200 dark:border-blue-800">
+                    3. Giá sau KM
+                  </th>
+                  <th className="py-3 px-3 text-right text-[#c2410c] dark:text-orange-200 sticky top-0 z-20 bg-[#ffedd5] dark:bg-[#431407] border-b-2 border-orange-300 dark:border-orange-800 border-r border-orange-200 dark:border-orange-900 min-w-[115px]">
                     Phí Shopee
                   </th>
-                  <th className="py-3 px-3 text-right bg-orange-50/90 dark:bg-orange-950/40 text-[#ee4d2d] sticky top-0">
+                  <th className="py-3 px-3 text-right text-[#c2410c] dark:text-orange-200 sticky top-0 z-20 bg-[#ffedd5] dark:bg-[#431407] border-b-2 border-orange-300 dark:border-orange-800 border-r border-orange-200 dark:border-orange-900 min-w-[120px]">
                     Lãi Shopee
                   </th>
-                  <th className="py-3 px-3 text-right bg-blue-50/90 dark:bg-blue-950/40 text-[#0f146d] dark:text-[#9da7ff] sticky top-0">
+                  <th className="py-3 px-3 text-right text-[#1e40af] dark:text-blue-200 sticky top-0 z-20 bg-[#dbeafe] dark:bg-[#1e2e60] border-b-2 border-blue-300 dark:border-blue-800 border-r border-blue-200 dark:border-blue-900 min-w-[115px]">
                     Phí Lazada
                   </th>
-                  <th className="py-3 px-3 text-right bg-blue-50/90 dark:bg-blue-950/40 text-[#0f146d] dark:text-[#9da7ff] sticky top-0">
+                  <th className="py-3 px-3 text-right text-[#1e40af] dark:text-blue-200 sticky top-0 z-20 bg-[#dbeafe] dark:bg-[#1e2e60] border-b-2 border-blue-300 dark:border-blue-800 border-r border-blue-200 dark:border-blue-900 min-w-[120px]">
                     Lãi Lazada
                   </th>
-                  <th className="py-3 px-3 text-center sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Chênh lệch / Tối ưu</th>
-                  <th className="py-3 px-2 text-center w-12 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Sửa</th>
+                  <th className="py-3 px-3 text-center min-w-[150px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Chênh lệch / Tối ưu
+                  </th>
+                  <th className="py-3 px-2 text-center w-12 min-w-[48px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700">
+                    Sửa
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e4e9f2] dark:divide-[#2b3b62]">
+              <tbody>
                 {filteredComparisonItems.length === 0 ? (
                   <tr>
                     <td colSpan={12} className="py-12 text-center text-[#71809d] dark:text-[#8ea2c8]">
@@ -836,153 +863,154 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   </tr>
                 ) : (
                   filteredComparisonItems.map((item) => {
-                  const p = item.product;
-                  const shopee = item.shopee;
-                  const lazada = item.lazada;
-                  const diff = item.diff;
+                    const p = item.product;
+                    const shopee = item.shopee;
+                    const lazada = item.lazada;
+                    const diff = item.diff;
 
-                  return (
-                    <tr
-                      key={p.sku}
-                      className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors ${
-                        item.isChecked ? 'bg-blue-50/20 dark:bg-blue-950/10' : ''
-                      }`}
-                    >
-                      <td className="py-3 px-3 text-center sticky left-0 z-10 bg-white dark:bg-[#162343]">
-                        <input
-                          type="checkbox"
-                          checked={item.isChecked}
-                          onChange={() => onToggleSku(p.sku)}
-                          className="w-4 h-4 rounded text-[#246bfe] accent-[#246bfe] cursor-pointer"
-                        />
-                      </td>
-                      <td className="py-3 px-3 min-w-[220px] max-w-[260px] sticky left-12 z-10 bg-white dark:bg-[#162343] shadow-[2px_0_5px_rgba(0,0,0,0.04)]">
-                        <strong className="block text-[#13213f] dark:text-white font-bold line-clamp-2 leading-tight text-xs sm:text-sm" title={p.name}>
-                          {p.name}
-                        </strong>
-                        <small className="block text-[11px] text-[#71809d] dark:text-[#8ea2c8] mt-0.5 truncate">
-                          {p.sku} · {p.category || 'Chưa phân loại'}
-                        </small>
-                      </td>
-
-                      {/* Tồn kho */}
-                      <td className="py-3 px-2 text-center whitespace-nowrap">
-                        <input
-                          type="number"
-                          min="0"
-                          step="1"
-                          value={p.stock}
-                          onChange={(e) => {
-                            const val = Math.max(0, Number(e.target.value) || 0);
-                            onQuickUpdateField?.(p.sku, 'stock', val);
-                          }}
-                          className="w-16 px-1.5 py-1 text-center font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
-                          title="Tùy chỉnh số lượng tồn kho"
-                        />
-                      </td>
-
-                      {/* 1. Giá vốn */}
-                      <td className="py-3 px-2 text-right whitespace-nowrap">
-                        <CurrencyInput
-                          value={p.cost}
-                          onChange={(val) => onQuickUpdateField?.(p.sku, 'cost', val)}
-                          className="w-24 px-1.5 py-1 text-right font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
-                          placeholder="0"
-                          title="Tùy chỉnh giá vốn / nhập (định dạng dấu chấm)"
-                        />
-                      </td>
-
-                      {/* 2. Giá niêm yết (gạch) */}
-                      <td className="py-3 px-2 text-right whitespace-nowrap">
-                        <CurrencyInput
-                          value={p.listPrice}
-                          onChange={(newLP) => {
-                            onQuickUpdateField?.(p.sku, 'listPrice', newLP);
-                          }}
-                          className="w-24 px-1.5 py-1 text-right font-bold text-xs rounded-lg border border-purple-200 dark:border-purple-800/60 bg-white dark:bg-[#14213f] text-[#7559db] dark:text-[#b49eff] outline-none focus:border-[#7559db]"
-                          placeholder="0"
-                          title="Giá bán niêm yết ban đầu (đặt cao để gạch giá)"
-                        />
-                      </td>
-
-                      {/* 3. Giá sau KM */}
-                      <td className="py-3 px-2 text-right font-bold text-[#246bfe] whitespace-nowrap">
-                        {money(shopee.sale)}
-                      </td>
-
-                      {/* Shopee Metrics */}
-                      <td className="py-3 px-3 text-right font-medium text-slate-600 dark:text-slate-300 bg-orange-50/30 dark:bg-orange-950/5 whitespace-nowrap">
-                        {money(shopee.totalFee)}
-                      </td>
-                      <td
-                        className={`py-3 px-3 text-right font-bold bg-orange-50/30 dark:bg-orange-950/5 whitespace-nowrap ${
-                          shopee.profit < 0 ? 'text-red-500' : 'text-[#ee4d2d]'
+                    return (
+                      <tr
+                        key={p.sku}
+                        className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors ${
+                          item.isChecked ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
                         }`}
                       >
-                        {money(shopee.profit)}
-                        <span className="block text-[10px] text-[#93a0b6] font-normal">
-                          {percent(shopee.margin)}
-                        </span>
-                      </td>
+                        <td className="py-3 px-3 w-[48px] min-w-[48px] max-w-[48px] text-center sticky left-0 z-10 bg-white dark:bg-[#162343] border-b border-slate-200 dark:border-slate-800 border-r border-slate-200 dark:border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={item.isChecked}
+                            onChange={() => onToggleSku(p.sku)}
+                            className="w-4 h-4 rounded text-[#246bfe] accent-[#246bfe] cursor-pointer"
+                          />
+                        </td>
+                        <td className="py-3 px-3 w-[260px] min-w-[260px] max-w-[280px] sticky left-[48px] z-10 bg-white dark:bg-[#162343] border-b border-slate-200 dark:border-slate-800 border-r-2 border-slate-300 dark:border-slate-700 shadow-[3px_0_6px_rgba(0,0,0,0.06)]">
+                          <strong className="block text-[#13213f] dark:text-white font-bold line-clamp-2 leading-tight text-xs sm:text-sm" title={p.name}>
+                            {p.name}
+                          </strong>
+                          <small className="block text-[11px] text-[#71809d] dark:text-[#8ea2c8] mt-0.5 truncate">
+                            {p.sku} · {p.category || 'Chưa phân loại'}
+                          </small>
+                        </td>
 
-                      {/* Lazada Metrics */}
-                      <td className="py-3 px-3 text-right font-medium text-slate-600 dark:text-slate-300 bg-blue-50/30 dark:bg-blue-950/5 whitespace-nowrap">
-                        {money(lazada.totalFee)}
-                      </td>
-                      <td
-                        className={`py-3 px-3 text-right font-bold bg-blue-50/30 dark:bg-blue-950/5 whitespace-nowrap ${
-                          lazada.profit < 0 ? 'text-red-500' : 'text-[#0f146d] dark:text-[#9da7ff]'
-                        }`}
-                      >
-                        {money(lazada.profit)}
-                        <span className="block text-[10px] text-[#93a0b6] font-normal">
-                          {percent(lazada.margin)}
-                        </span>
-                      </td>
+                        {/* Tồn kho */}
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={p.stock}
+                            onChange={(e) => {
+                              const val = Math.max(0, Number(e.target.value) || 0);
+                              onQuickUpdateField?.(p.sku, 'stock', val);
+                            }}
+                            className="w-16 px-1.5 py-1 text-center font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
+                            title="Tùy chỉnh số lượng tồn kho"
+                          />
+                        </td>
 
-                      {/* Comparison Decision */}
-                      <td className="py-3 px-3 text-center whitespace-nowrap">
-                        {item.betterPlatform === 'shopee' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-orange-100 dark:bg-orange-950/50 text-[#ee4d2d]">
-                            <ArrowUpRight className="w-3 h-3" />
-                            <span>Shopee +{money(diff)}</span>
-                          </span>
-                        ) : item.betterPlatform === 'lazada' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-blue-100 dark:bg-blue-950/50 text-[#0f146d] dark:text-[#9da7ff]">
-                            <ArrowUpRight className="w-3 h-3" />
-                            <span>Lazada +{money(Math.abs(diff))}</span>
-                          </span>
-                        ) : (
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600">
-                            Ngang nhau
-                          </span>
-                        )}
-                      </td>
+                        {/* 1. Giá vốn */}
+                        <td className="py-3 px-2 text-right whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                          <CurrencyInput
+                            value={p.cost}
+                            onChange={(val) => onQuickUpdateField?.(p.sku, 'cost', val)}
+                            className="w-24 px-1.5 py-1 text-right font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
+                            placeholder="0"
+                            title="Tùy chỉnh giá vốn / nhập"
+                          />
+                        </td>
 
-                      {/* Edit full product */}
-                      <td className="py-3 px-2 text-center whitespace-nowrap">
-                        <button
-                          type="button"
-                          onClick={() => setEditingProduct(p)}
-                          title="Tùy chỉnh thông tin sản phẩm"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#246bfe] hover:bg-blue-50 dark:hover:bg-blue-950/50 transition cursor-pointer"
+                        {/* 2. Giá niêm yết (gạch) */}
+                        <td className="py-3 px-2 text-right whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800 bg-purple-50/30 dark:bg-purple-950/20">
+                          <CurrencyInput
+                            value={p.listPrice}
+                            onChange={(newLP) => {
+                              onQuickUpdateField?.(p.sku, 'listPrice', newLP);
+                            }}
+                            className="w-24 px-1.5 py-1 text-right font-bold text-xs rounded-lg border border-purple-200 dark:border-purple-800/60 bg-white dark:bg-[#14213f] text-[#7559db] dark:text-[#b49eff] outline-none focus:border-[#7559db]"
+                            placeholder="0"
+                            title="Giá bán niêm yết ban đầu"
+                          />
+                        </td>
+
+                        {/* 3. Giá sau KM */}
+                        <td className="py-3 px-2 text-right font-bold text-[#246bfe] whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800 bg-blue-50/30 dark:bg-blue-950/20">
+                          {money(shopee.sale)}
+                        </td>
+
+                        {/* Shopee Metrics */}
+                        <td className="py-3 px-3 text-right font-medium text-slate-600 dark:text-slate-300 bg-orange-50/40 dark:bg-orange-950/20 whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-orange-200/50 dark:border-orange-900/40">
+                          {money(shopee.totalFee)}
+                        </td>
+                        <td
+                          className={`py-3 px-3 text-right font-bold bg-orange-50/40 dark:bg-orange-950/20 whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-orange-200/50 dark:border-orange-900/40 ${
+                            shopee.profit < 0 ? 'text-red-500' : 'text-[#ee4d2d]'
+                          }`}
                         >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }))}
+                          {money(shopee.profit)}
+                          <span className="block text-[10px] text-[#93a0b6] font-normal">
+                            {percent(shopee.margin)}
+                          </span>
+                        </td>
+
+                        {/* Lazada Metrics */}
+                        <td className="py-3 px-3 text-right font-medium text-slate-600 dark:text-slate-300 bg-blue-50/40 dark:bg-blue-950/20 whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-blue-200/50 dark:border-blue-900/40">
+                          {money(lazada.totalFee)}
+                        </td>
+                        <td
+                          className={`py-3 px-3 text-right font-bold bg-blue-50/40 dark:bg-blue-950/20 whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-blue-200/50 dark:border-blue-900/40 ${
+                            lazada.profit < 0 ? 'text-red-500' : 'text-[#0f146d] dark:text-[#9da7ff]'
+                          }`}
+                        >
+                          {money(lazada.profit)}
+                          <span className="block text-[10px] text-[#93a0b6] font-normal">
+                            {percent(lazada.margin)}
+                          </span>
+                        </td>
+
+                        {/* Comparison Decision */}
+                        <td className="py-3 px-3 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
+                          {item.betterPlatform === 'shopee' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-orange-100 dark:bg-orange-950/50 text-[#ee4d2d]">
+                              <ArrowUpRight className="w-3 h-3" />
+                              <span>Shopee +{money(diff)}</span>
+                            </span>
+                          ) : item.betterPlatform === 'lazada' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-blue-100 dark:bg-blue-950/50 text-[#0f146d] dark:text-[#9da7ff]">
+                              <ArrowUpRight className="w-3 h-3" />
+                              <span>Lazada +{money(Math.abs(diff))}</span>
+                            </span>
+                          ) : (
+                            <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600">
+                              Ngang nhau
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Edit full product */}
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                          <button
+                            type="button"
+                            onClick={() => setEditingProduct(p)}
+                            title="Tùy chỉnh thông tin sản phẩm"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#246bfe] hover:bg-blue-50 dark:hover:bg-blue-950/50 transition cursor-pointer"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         ) : (
           /* Single Platform Detailed Mode */
-          <div className="overflow-auto max-h-[calc(100vh-220px)] min-h-[460px] relative scrollbar-thin rounded-xl border border-[#e4e9f2] dark:border-[#2b3b62]">
-            <table className="w-full min-w-[1360px] text-left border-collapse text-xs sm:text-sm">
-              <thead className="sticky top-0 z-30 shadow-[0_2px_4px_rgba(0,0,0,0.06)] bg-[#fbfcfe] dark:bg-[#14213f]">
-                <tr className="bg-[#fbfcfe] dark:bg-[#14213f] text-[#71809d] dark:text-[#8ea2c8] uppercase text-[11px] font-bold tracking-wider border-b border-[#e4e9f2] dark:border-[#2b3b62]">
-                  <th className="py-3 px-3 w-12 text-center sticky top-0 left-0 z-50 bg-[#fbfcfe] dark:bg-[#14213f]">
+          <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)] min-h-[460px] relative scrollbar-thin">
+            <table className="w-full min-w-[1450px] text-left border-separate border-spacing-0 text-xs sm:text-sm">
+              <thead className="sticky top-0 z-30 shadow-xs">
+                <tr className="uppercase text-[11px] font-bold tracking-wider">
+                  <th className="py-3 px-3 w-[48px] min-w-[48px] max-w-[48px] text-center sticky top-0 left-0 z-50 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
                     <input
                       type="checkbox"
                       checked={allVisibleSelected}
@@ -997,61 +1025,87 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                       className="w-4 h-4 rounded text-[#246bfe] accent-[#246bfe] cursor-pointer"
                     />
                   </th>
-                  <th className="py-3 px-3 min-w-[220px] max-w-[260px] sticky top-0 left-12 z-50 bg-[#fbfcfe] dark:bg-[#14213f] shadow-[2px_0_5px_rgba(0,0,0,0.04)]">
+                  <th className="py-3 px-3 w-[260px] min-w-[260px] max-w-[280px] sticky top-0 left-[48px] z-50 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r-2 border-slate-300 dark:border-slate-700 shadow-[3px_0_6px_rgba(0,0,0,0.06)]">
                     Sản phẩm
                   </th>
-                  <th className="py-3 px-2 text-center w-16 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Tồn kho</th>
+                  <th className="py-3 px-2 text-center w-16 min-w-[64px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Tồn kho
+                  </th>
                   
                   {/* Step 1: Giá nhập vốn */}
-                  <th className="py-3 px-2 text-right w-28 bg-slate-100/90 dark:bg-slate-900/60 border-x border-slate-200/60 dark:border-slate-800 sticky top-0">
-                    <span className="block text-[9px] text-slate-500 font-black uppercase">Bước 1</span>
+                  <th className="py-3 px-2 text-right min-w-[125px] bg-[#e2e8f0] dark:bg-[#1e293b] text-slate-800 dark:text-slate-100 border-b-2 border-slate-400 dark:border-slate-600 border-r border-slate-300 dark:border-slate-700 sticky top-0 z-20">
+                    <span className="block text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase">Bước 1</span>
                     <span>Giá nhập (vốn)</span>
                   </th>
 
-                  {/* Step 2: Giá niêm yết ban đầu để tạo hiệu ứng gạch giá */}
-                  <th className="py-3 px-2 text-right w-32 bg-purple-50/90 dark:bg-purple-950/50 text-[#7559db] dark:text-[#b49eff] border-r border-purple-100 dark:border-purple-900/40 sticky top-0">
+                  {/* Step 2: Giá niêm yết ban đầu */}
+                  <th className="py-3 px-2 text-right min-w-[135px] bg-[#ede9fe] dark:bg-[#2e1d5a] text-[#6d28d9] dark:text-[#c4b5fd] border-b-2 border-purple-300 dark:border-purple-700 border-r border-purple-200 dark:border-purple-800 sticky top-0 z-20">
                     <span className="block text-[9px] font-black uppercase">Bước 2 (Hiệu ứng)</span>
                     <span>Giá niêm yết (gạch)</span>
                   </th>
 
                   {/* Step 3: % Khuyến mãi */}
-                  <th className="py-3 px-2 text-center w-24 bg-amber-50/90 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border-r border-amber-100 dark:border-amber-900/40 sticky top-0">
+                  <th className="py-3 px-2 text-center min-w-[100px] bg-[#fef3c7] dark:bg-[#45270a] text-amber-800 dark:text-amber-300 border-b-2 border-amber-300 dark:border-amber-700 border-r border-amber-200 dark:border-amber-800 sticky top-0 z-20">
                     <span className="block text-[9px] font-black uppercase">Bước 3</span>
                     <span>% Khuyến mãi</span>
                   </th>
 
-                  {/* Step 4: Giá sau khuyến mãi bán ra */}
-                  <th className="py-3 px-2 text-right w-32 bg-blue-50/90 dark:bg-blue-950/50 text-[#246bfe] dark:text-[#7ba9ff] border-r border-blue-100 dark:border-blue-900/40 sticky top-0">
+                  {/* Step 4: Giá sau khuyến mãi */}
+                  <th className="py-3 px-2 text-right min-w-[150px] bg-[#e0e7ff] dark:bg-[#1e2e60] text-[#1d4ed8] dark:text-[#93c5fd] border-b-2 border-blue-300 dark:border-blue-700 border-r border-blue-200 dark:border-blue-800 sticky top-0 z-20">
                     <span className="block text-[9px] font-black uppercase">Bước 4 (Thực bán)</span>
                     <span>Giá sau KM (đ)</span>
                   </th>
 
-                  <th className="py-3 px-2 text-center w-16 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">% Ngành</th>
-                  <th className="py-3 px-3 text-right sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Tổng phí sàn</th>
-                  <th className="py-3 px-3 text-right sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Tiền thu về</th>
+                  <th className="py-3 px-2 text-center min-w-[100px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    % Ngành
+                  </th>
+                  <th className="py-3 px-3 text-right min-w-[115px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Tổng phí sàn
+                  </th>
+                  <th className="py-3 px-3 text-right min-w-[120px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Tiền thu về
+                  </th>
 
                   {/* Lãi ròng (Thu về - Vốn) */}
-                  <th className="py-3 px-3 text-right bg-emerald-50/90 dark:bg-emerald-950/40 text-[#0d9b73] dark:text-emerald-400 border-x border-emerald-100 dark:border-emerald-900/40 sticky top-0">
+                  <th className="py-3 px-3 text-right min-w-[140px] bg-[#d1fae5] dark:bg-[#064e3b] text-[#065f46] dark:text-[#6ee7b7] border-b-2 border-emerald-300 dark:border-emerald-700 border-r border-emerald-200 dark:border-emerald-800 sticky top-0 z-20">
                     <span className="block font-black">Lãi ròng</span>
                     <span className="block text-[9px] font-normal text-slate-500 dark:text-slate-400">(Thu về - Vốn)</span>
                   </th>
 
                   {/* Cột Dự phòng rủi ro 5% tương ứng cột V trong Excel */}
-                  <th className="py-3 px-2 text-right w-24 bg-rose-50/90 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 sticky top-0" title="Khoản dự phòng rủi ro hoàn & đóng gói (5% giá sau KM) trong file Excel">
+                  <th className="py-3 px-2 text-right min-w-[115px] bg-[#ffe4e6] dark:bg-[#4c1d24] text-rose-800 dark:text-rose-300 border-b-2 border-rose-300 dark:border-rose-700 border-r border-rose-200 dark:border-rose-800 sticky top-0 z-20" title="Khoản dự phòng rủi ro hoàn & đóng gói (5% giá sau KM) trong file Excel">
                     <span className="block text-[9px] font-black uppercase">Dự phòng</span>
                     <span>Rủi ro 5%</span>
                   </th>
 
-                  <th className="py-3 px-2 text-right sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Biên LN</th>
-                  <th className="py-3 px-2 text-center sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Trạng thái</th>
-                  <th className="py-3 px-2 text-center w-12 sticky top-0 bg-[#fbfcfe] dark:bg-[#14213f]">Sửa</th>
+                  <th className="py-3 px-2 text-right min-w-[115px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Biên LN
+                  </th>
+                  <th className="py-3 px-2 text-center min-w-[110px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700 border-r border-slate-200 dark:border-slate-800">
+                    Trạng thái
+                  </th>
+                  <th className="py-3 px-2 text-center w-[50px] min-w-[50px] sticky top-0 z-20 bg-[#f1f5f9] dark:bg-[#131f3b] border-b-2 border-slate-300 dark:border-slate-700">
+                    Sửa
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e4e9f2] dark:divide-[#2b3b62]">
+              <tbody>
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan={15} className="py-12 text-center text-[#71809d] dark:text-[#8ea2c8]">
-                      Hãy nhập danh sách sản phẩm trước để bắt đầu chiến dịch.
+                      <p className="font-semibold text-sm">Chưa có sản phẩm nào trong hệ thống.</p>
+                      <p className="text-xs text-slate-400 mt-1">Anh có thể tự thêm lẻ từng sản phẩm trực tiếp ở đây hoặc nạp từ file Excel.</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingProduct(null);
+                          setIsAddModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-xl bg-[#246bfe] hover:bg-[#195de6] text-white font-bold text-xs shadow-md transition cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>+ Thêm sản phẩm đầu tiên</span>
+                      </button>
                     </td>
                   </tr>
                 ) : filteredCalculatedItems.length === 0 ? (
@@ -1123,11 +1177,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     return (
                       <tr
                         key={p.sku}
-                        className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors ${
-                          item.isChecked ? 'bg-blue-50/20 dark:bg-blue-950/10' : ''
+                        className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors ${
+                          item.isChecked ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
                         }`}
                       >
-                        <td className="py-3 px-3 text-center sticky left-0 z-10 bg-white dark:bg-[#162343]">
+                        <td className="py-3 px-3 w-[48px] min-w-[48px] max-w-[48px] text-center sticky left-0 z-10 bg-white dark:bg-[#162343] border-b border-slate-200 dark:border-slate-800 border-r border-slate-200 dark:border-slate-800">
                           <input
                             type="checkbox"
                             checked={item.isChecked}
@@ -1135,7 +1189,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                             className="w-4 h-4 rounded text-[#246bfe] accent-[#246bfe] cursor-pointer"
                           />
                         </td>
-                        <td className="py-3 px-3 min-w-[220px] max-w-[260px] sticky left-12 z-10 bg-white dark:bg-[#162343] shadow-[2px_0_5px_rgba(0,0,0,0.04)]">
+                        <td className="py-3 px-3 w-[260px] min-w-[260px] max-w-[280px] sticky left-[48px] z-10 bg-white dark:bg-[#162343] border-b border-slate-200 dark:border-slate-800 border-r-2 border-slate-300 dark:border-slate-700 shadow-[3px_0_6px_rgba(0,0,0,0.06)]">
                           <strong className="block text-[#13213f] dark:text-white font-bold line-clamp-2 leading-tight text-xs sm:text-sm" title={p.name}>
                             {p.name}
                           </strong>
@@ -1145,7 +1199,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         </td>
 
                         {/* Tồn kho (Editable) */}
-                        <td className="py-3 px-2 text-center whitespace-nowrap">
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           <input
                             type="number"
                             min="0"
@@ -1161,23 +1215,22 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         </td>
 
                         {/* [Bước 1] Giá vốn / Giá nhập (Editable) */}
-                        <td className="py-3 px-2 text-right whitespace-nowrap bg-slate-50/40 dark:bg-slate-900/20 border-x border-slate-200/50 dark:border-slate-800/60">
+                        <td className="py-3 px-2 text-right whitespace-nowrap bg-slate-50/60 dark:bg-slate-900/30 border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           <CurrencyInput
                             value={p.cost}
                             onChange={(val) => onQuickUpdateField?.(p.sku, 'cost', val)}
                             title="Bước 1: Giá vốn mua hàng thực tế từ NCC/xưởng. Lãi ròng sẽ lấy Giá sau KM trừ đi giá vốn này."
-                            className="w-24 px-1.5 py-1 text-right font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
+                            className="w-full max-w-[110px] px-2 py-1 text-right font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe]"
                             placeholder="0"
                           />
                         </td>
 
-                        {/* [Bước 2] Giá niêm yết ban đầu (Đặt cao để gạch giá tạo hiệu ứng thị giác) */}
-                        <td className="py-3 px-2 text-right whitespace-nowrap bg-purple-50/30 dark:bg-purple-950/20 border-r border-purple-100 dark:border-purple-900/40">
+                        {/* [Bước 2] Giá niêm yết ban đầu */}
+                        <td className="py-3 px-2 text-right whitespace-nowrap bg-purple-50/40 dark:bg-purple-950/25 border-b border-slate-200 dark:border-slate-800 border-r border-purple-200/60 dark:border-purple-900/40">
                           <CurrencyInput
                             value={p.listPrice}
                             onChange={(newLP) => {
                               onQuickUpdateField?.(p.sku, 'listPrice', newLP);
-                              // Tự động cập nhật lại Giá sau khuyến mãi theo % khuyến mãi hiện tại
                               if (newLP > 0) {
                                 const currentDiscount = c.discountRate;
                                 const newSalePrice = Math.max(0, Math.round(newLP * (1 - currentDiscount / 100)));
@@ -1185,13 +1238,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                               }
                             }}
                             title="Bước 2: Giá niêm yết ban đầu (đặt cao để gạch giá giảm sốc tạo hiệu ứng thị giác)"
-                            className="w-26 px-1.5 py-1 text-right font-extrabold text-xs rounded-lg border border-purple-200 dark:border-purple-800/60 bg-white dark:bg-[#14213f] text-[#7559db] dark:text-[#b49eff] outline-none focus:border-[#7559db]"
+                            className="w-full max-w-[118px] px-2 py-1 text-right font-extrabold text-xs rounded-lg border border-purple-200 dark:border-purple-800/60 bg-white dark:bg-[#14213f] text-[#7559db] dark:text-[#b49eff] outline-none focus:border-[#7559db]"
                             placeholder="0"
                           />
                         </td>
 
-                        {/* [Bước 3] % Khuyến mãi (Giảm từ giá niêm yết) */}
-                        <td className="py-3 px-2 text-center whitespace-nowrap bg-amber-50/30 dark:bg-amber-950/20 border-r border-amber-100 dark:border-amber-900/40">
+                        {/* [Bước 3] % Khuyến mãi */}
+                        <td className="py-3 px-2 text-center whitespace-nowrap bg-amber-50/40 dark:bg-amber-950/25 border-b border-slate-200 dark:border-slate-800 border-r border-amber-200/60 dark:border-amber-900/40">
                           <div className="inline-flex items-center gap-1 justify-center">
                             <input
                               type="number"
@@ -1207,7 +1260,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                 }
                               }}
                               title="Bước 3: % Khuyến mãi giảm giá (tính từ Giá niêm yết bước 2)"
-                              className={`w-14 px-1 py-1 text-center font-bold text-xs rounded-lg border outline-none transition ${
+                              className={`w-14 px-1.5 py-1 text-center font-bold text-xs rounded-lg border outline-none transition ${
                                 isCustomPrice
                                   ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 ring-1 ring-amber-400/30'
                                   : 'border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white focus:border-amber-500'
@@ -1217,15 +1270,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           </div>
                         </td>
 
-                        {/* [Bước 4] Giá sau khuyến mãi (Giá bán thực tế cho khách) */}
-                        <td className="py-3 px-2 text-right whitespace-nowrap bg-blue-50/30 dark:bg-blue-950/20 border-r border-blue-100 dark:border-blue-900/40">
-                          <div className="inline-flex items-center gap-1 justify-end">
+                        {/* [Bước 4] Giá sau khuyến mãi */}
+                        <td className="py-3 px-2 text-right whitespace-nowrap bg-blue-50/40 dark:bg-blue-950/25 border-b border-slate-200 dark:border-slate-800 border-r border-blue-200/60 dark:border-blue-900/40">
+                          <div className="inline-flex items-center gap-1 justify-end w-full">
                             <CurrencyInput
                               value={Math.round(c.sale)}
                               onChange={(val) => {
                                 onSaleOverrideChange(p.sku, val > 0 ? val : null);
                               }}
-                              className={`w-28 px-2 py-1 text-right font-extrabold text-xs rounded-lg border outline-none transition ${
+                              className={`w-full max-w-[125px] px-2 py-1 text-right font-extrabold text-xs rounded-lg border outline-none transition ${
                                 isCustomPrice
                                   ? 'border-[#246bfe] bg-[#f0f6ff] dark:bg-[#192b52] text-[#246bfe] dark:text-[#8cb8ff] ring-1 ring-[#246bfe]/30'
                                   : 'border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white focus:border-[#246bfe]'
@@ -1238,7 +1291,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                 type="button"
                                 onClick={() => onSaleOverrideChange(p.sku, null)}
                                 title="Khôi phục giá tính theo % chung của chiến dịch"
-                                className="text-xs text-[#246bfe] hover:text-red-500 font-bold px-0.5 cursor-pointer"
+                                className="text-xs text-[#246bfe] hover:text-red-500 font-bold px-0.5 cursor-pointer shrink-0"
                               >
                                 ↺
                               </button>
@@ -1246,8 +1299,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           </div>
                         </td>
 
-                        {/* % Phí cố định ngành (Shopee: Bếp 11%, Gia dụng chung 13%, Tắm nóng 9%, Tivi 7.5%, v.v.) */}
-                        <td className="py-3 px-2 text-center whitespace-nowrap">
+                        {/* % Phí cố định ngành */}
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           <div className="inline-flex items-center justify-center gap-0.5">
                             <input
                               type="number"
@@ -1259,7 +1312,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                 const val = Math.max(0, Number(e.target.value) || 0);
                                 onQuickUpdateField?.(p.sku, 'categoryPercent', val);
                               }}
-                              title="Tùy chỉnh % phí cố định ngành hàng cho sản phẩm này (Shopee STT 168 Bếp: 11%, Gia dụng chung: 13%, Máy nước nóng: 9%)"
+                              title="Tùy chỉnh % phí cố định ngành hàng cho sản phẩm này"
                               className="w-14 px-1 py-1 text-center font-bold text-xs rounded-lg border border-[#cfd9ea] dark:border-[#33466f] bg-white dark:bg-[#14213f] text-[#13213f] dark:text-white outline-none focus:border-[#246bfe] shadow-2xs hover:border-[#246bfe]"
                             />
                             <span className="text-[11px] font-bold text-slate-400">%</span>
@@ -1267,20 +1320,20 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         </td>
 
                         {/* Tổng phí sàn */}
-                        <td className="py-3 px-3 text-right font-medium text-[#71809d] dark:text-[#9bb0d6] whitespace-nowrap">
+                        <td className="py-3 px-3 text-right font-medium text-[#71809d] dark:text-[#9bb0d6] whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           <span className="border-b border-dotted border-slate-400 cursor-help" title={feeTooltip}>
                             {money(c.totalFee)}
                           </span>
                         </td>
 
                         {/* Tiền thu về */}
-                        <td className="py-3 px-3 text-right font-semibold text-[#13213f] dark:text-white whitespace-nowrap">
+                        <td className="py-3 px-3 text-right font-semibold text-[#13213f] dark:text-white whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           {money(c.moneyReceived)}
                         </td>
 
-                        {/* Lãi ròng = Tiền thu về - Giá vốn (Cột T file Excel) */}
+                        {/* Lãi ròng = Tiền thu về - Giá vốn */}
                         <td
-                          className={`py-3 px-3 text-right font-black whitespace-nowrap bg-emerald-50/40 dark:bg-emerald-950/20 border-x border-emerald-100/60 dark:border-emerald-900/40 ${
+                          className={`py-3 px-3 text-right font-black whitespace-nowrap bg-emerald-50/50 dark:bg-emerald-950/25 border-b border-slate-200 dark:border-slate-800 border-r border-emerald-200/60 dark:border-emerald-900/40 ${
                             c.profit < 0 ? 'text-red-500' : 'text-[#0d9b73] dark:text-emerald-400'
                           }`}
                         >
@@ -1292,13 +1345,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           </span>
                         </td>
 
-                        {/* Phí rủi ro & đóng gói 5% (Cột V file Excel) */}
-                        <td className="py-3 px-2 text-right font-medium text-rose-600 dark:text-rose-400 bg-rose-50/30 dark:bg-rose-950/10 whitespace-nowrap">
+                        {/* Phí rủi ro & đóng gói 5% */}
+                        <td className="py-3 px-2 text-right font-medium text-rose-600 dark:text-rose-400 bg-rose-50/40 dark:bg-rose-950/20 whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-rose-200/60 dark:border-rose-900/40">
                           <span>{money(c.breakdown.packagingRiskFee)}</span>
                         </td>
 
-                        {/* Biên LN (Cột U file Excel) */}
-                        <td className="py-3 px-2 text-right whitespace-nowrap">
+                        {/* Biên LN */}
+                        <td className="py-3 px-2 text-right whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           <strong className="block text-xs font-extrabold text-slate-800 dark:text-slate-200" title="Tỷ lệ LN trên giá niêm yết (theo cột U file Excel của anh)">
                             {percent(c.margin)}
                           </strong>
@@ -1308,12 +1361,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         </td>
 
                         {/* Trạng thái */}
-                        <td className="py-3 px-2 text-center whitespace-nowrap">
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800 border-r border-slate-200/70 dark:border-slate-800">
                           {statusBadge}
                         </td>
 
                         {/* Nút sửa chi tiết */}
-                        <td className="py-3 px-2 text-center whitespace-nowrap">
+                        <td className="py-3 px-2 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
                           <button
                             type="button"
                             onClick={() => setEditingProduct(p)}
@@ -1333,13 +1386,22 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         )}
       </section>
 
-      {/* Modal for Quick Edit from Campaign screen */}
+      {/* Modal for Add or Quick Edit from Campaign screen */}
       <ProductModal
-        isOpen={Boolean(editingProduct)}
-        onClose={() => setEditingProduct(null)}
-        onSave={(updated) => {
-          onUpdateProduct?.(updated);
+        isOpen={Boolean(editingProduct) || isAddModalOpen}
+        onClose={() => {
           setEditingProduct(null);
+          setIsAddModalOpen(false);
+        }}
+        onSave={(item) => {
+          if (editingProduct) {
+            onUpdateProduct?.(item);
+            onShowToast(`Đã lưu thay đổi: ${item.name}`);
+          } else {
+            onAddProduct?.(item);
+          }
+          setEditingProduct(null);
+          setIsAddModalOpen(false);
         }}
         product={editingProduct}
         existingCategories={Array.from(new Set(products.map((p) => p.category).filter(Boolean)))}

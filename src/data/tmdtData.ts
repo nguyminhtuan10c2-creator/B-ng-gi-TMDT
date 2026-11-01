@@ -4,7 +4,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "RWF-W1917TVK",
     "name": "Máy nước nóng lạnh Toshiba RWF-W1917TV(K)",
-    "category": "Cây nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2240000,
     "listPrice": 2890000,
     "stock": 100,
@@ -13,7 +13,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "RWF-W1664TV",
     "name": "Cây Nước Nóng Lạnh Toshiba RWF-W1664TV (K1) (bình nước trên)",
-    "category": "Cây nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2660000,
     "listPrice": 3600000,
     "stock": 5,
@@ -22,7 +22,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "RWF-W1664TV",
     "name": "Cây Nước Nóng Lạnh Toshiba RWF-W1664TV (W1) (bình nước trên)",
-    "category": "Cây nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 2640000,
     "listPrice": 3600000,
     "stock": 12,
@@ -67,7 +67,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "CHP-1270D",
     "name": "Máy lọc nước RO ChungHo CHP-1270D 4 lõi",
-    "category": "Gia dụng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 3400000,
     "listPrice": 5210000,
     "stock": 20,
@@ -103,7 +103,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "TWP-W2396SVNM",
     "name": "Máy Lọc Nước RO Toshiba TWP-W2396SVN(M)",
-    "category": "Gia dụng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 7800000,
     "listPrice": 10000000,
     "stock": 100,
@@ -121,7 +121,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "TWP-H2396SVNW",
     "name": "Máy Lọc Nước RO Toshiba TWP-H2396SVN(W)",
-    "category": "Gia dụng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 5600000,
     "listPrice": 10000000,
     "stock": 100,
@@ -590,7 +590,7 @@ export const TMDT_PRODUCTS: Product[] = [
   {
     "sku": "RWF-W1669BV",
     "name": "Cây nước nóng lạnh (Bình để dưới) Toshiba RWF-W1669BV (K1)",
-    "category": "Cây nước nóng",
+    "category": "Máy lọc nước & Cây nước",
     "cost": 3580000,
     "listPrice": 4500000,
     "stock": 100,
